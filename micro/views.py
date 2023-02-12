@@ -1,19 +1,40 @@
 from rest_framework import generics
 from rest_framework.response import Response
+from django.contrib.auth.models import User
 
-from micro.serializers import CalculationSerializer
+from micro.models import Calculation,User
+from micro.serializers import CalculationSerializer,UserSerializer
 
 
-class CalculationView(generics.GenericAPIView):
+class CalculationCreateView(generics.ListCreateAPIView):
+    queryset = Calculation.objects.all()
     serializer_class = CalculationSerializer
 
-    def post(self, request):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        total_bags = serializer.validated_data['total_bags']
-        weight_kgs = serializer.validated_data['weight_kgs']
-        commission = serializer.validated_data['commission']
-        labour_cost = serializer.validated_data['labour_cost']
-        price = serializer.validated_data['price']
+    def perform_create(self, serializer):
+        user_id = self.request.data['user']
+        user = User.objects.get(id=user_id)
+        total_bags = self.request.data['total_bags']
+        weight_kgs = self.request.data['weight_kgs']
+        commission = self.request.data['commission']
+        labour_cost = self.request.data['labour_cost']
+        price = self.request.data['price']
         result = ((weight_kgs/100)*price - (total_bags*labour_cost))*(1-commission/100)
-        return Response({"result": result})
+        serializer.save(result=result, user=user)
+        return Response(result)
+
+    def get_queryset(self):
+        user = self.request.data.get('user')
+        queryset = Calculation.objects.all()
+        if user:
+            queryset = queryset.filter(user=user)
+        return queryset
+
+
+class UserCreateView(generics.CreateAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+
+    def perform_create(self, serializer):
+        name = self.request.data['name']
+        serializer.save(name=name)
+        return Response({'status': 'User Created'})

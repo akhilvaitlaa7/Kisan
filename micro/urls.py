@@ -1,7 +1,8 @@
 from django.urls import path
 
-from micro.views import CalculationView
+from micro.views import CalculationCreateView,UserCreateView
 
 urlpatterns = [
-    path('calculate/', CalculationView.as_view(), name='calculate'),
+    path('calculate/', CalculationCreateView.as_view()),
+    path('users/', UserCreateView.as_view()),
 ]
