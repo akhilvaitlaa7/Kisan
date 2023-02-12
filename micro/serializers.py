@@ -10,6 +10,7 @@ class CalculationSerializer(serializers.Serializer):
     labour_cost = serializers.IntegerField()
     price = serializers.FloatField()
     result = serializers.FloatField(required=False)
+    timestamp = serializers.DateTimeField(required=False)
 
     def create(self, validated_data):
         return Calculation.objects.create(**validated_data)

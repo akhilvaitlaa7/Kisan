@@ -24,7 +24,7 @@ class CalculationCreateView(generics.ListCreateAPIView):
 
     def get_queryset(self):
         user = self.request.data.get('user')
-        queryset = Calculation.objects.all()
+        queryset = Calculation.objects.all().order_by('-timestamp')
         if user:
             queryset = queryset.filter(user=user)
         return queryset
