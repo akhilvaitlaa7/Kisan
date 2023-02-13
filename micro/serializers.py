@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from micro.models import Calculation, User
+from micro.models import Calculation, User, ImageModel
 
 
 class CalculationSerializer(serializers.Serializer):
@@ -22,10 +22,14 @@ class CalculationSerializer(serializers.Serializer):
             return {'result': instance.result}
 
 
-
 class UserSerializer(serializers.Serializer):
     name = serializers.CharField()
 
     def create(self, validated_data):
         return User.objects.create(**validated_data)
 
+
+class UserImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ImageModel
+        fields = ['user', 'image', 'timestamp']
